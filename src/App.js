@@ -1,6 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
 import { useState } from 'react';
+import Axios from 'axios';
 
 function App() {
 
@@ -15,12 +16,17 @@ function App() {
 	}
 
 	function handleSubmit(event) {
-
+		event.preventDefault();
+		
+		Axios.get("https://www.googleapis.com/books/v1/volumes?q="+book+"&key="+apiKey+"&maxResults=40")
+		.then(data => {
+			setResult(data.data.items);			
+		})
 	}
 
 	return (
 		<div className="Container">
-			<h1>Book Search App</h1>
+			<h1>Consulta de livros</h1>
 			<form onSubmit={handleSubmit}>
 				<div className="form-group">
 					<input type="text" onChange={handleChange} className="form-control mt-10" placeholder="Procurar livros" autoComplete="off" />
@@ -28,6 +34,12 @@ function App() {
 				</div>
 				<button type="submit" className="btn btn-danger">Pesquisar</button>
 			</form>
+
+			{result.map(book => (
+				<a target="_blank" href={book.volumeInfo.previewLink}>
+					<img src={book.volumeInfo.imageLinks.thumbnail} alt={book.title} />
+				</a>
+			))}
 		</div>
 	);
 }
